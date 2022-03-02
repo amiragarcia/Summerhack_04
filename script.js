@@ -77,7 +77,7 @@ function probarSuerte(){
             random();
     }
     mostrarResultados();
-    console.log(resultados);
+    //console.log(resultados);
 }
 
 function mostrarResultados(){
@@ -157,9 +157,7 @@ afinidad.addEventListener("click", function(){
     pic6de6.setAttribute("src", resultados[5].img);
 
     let n = resultados[0].valor + resultados[1].valor + resultados[2].valor;
-    console.log(n);
     let x = resultados[3].valor + resultados[4].valor + resultados[5].valor;
-    console.log(x);
 
     if (n%2 ==0 && x%2 ==0){
         resultadoFinal.innerHTML = "¡Increible afinidad!"
@@ -179,7 +177,11 @@ irInicio.addEventListener("click", function(){
 
 guardar.addEventListener("click", function(){
     let partidaData ={nombrej01: jugador01.value, nombrej02: jugador02.value, resultados}
+
+    let indice = partidasAnteriores.length;
+
     partidasAnteriores.push(partidaData);
+
     section05.style.display= "none";
     section01.style.display= "block";
     containerSection01.style.display= "flex";
@@ -188,7 +190,7 @@ guardar.addEventListener("click", function(){
     resultados = [];
     let item = `<li>
                 <p>${jugador01.value} y ${jugador02.value}</p>
-                <svg id="volverAVer" onclick="mostrarAnterior()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"/></svg>
+                <svg id="volverAVer" data-indice= ${indice} onclick="mostrarAnterior(event)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"/></svg>
                 </li>`
     listaDeAnteriores.innerHTML += item;
     jugador01.value = "";
@@ -196,11 +198,27 @@ guardar.addEventListener("click", function(){
 })
 
 function mostrarAnterior(e){
+    let svg = e.currentTarget;
+    let indice = svg.getAttribute("data-indice");
+
+    //console.log(resultados);
+    //console.log(jugador01.value)
+    //console.log(jugador02.value)
+
+    resultados = partidasAnteriores[indice].resultados;
+    jugador01 = partidasAnteriores[indice].nombrej01;
+    jugador02 = partidasAnteriores[indice].nombrej02;
+  
+    //console.log(resultados);
+    //console.log(jugador01);
+    //console.log(jugador02);
+
     section01.style.display= "none";
     section02.style.display= "flex";
     setTimeout(function(){
         section02.style.display= "none";
         section03.style.display= "flex"
+        mostrarResultados();
     },0)
 
 }
