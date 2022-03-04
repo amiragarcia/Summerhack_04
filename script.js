@@ -1,6 +1,7 @@
 let containerSection01 = document.getElementById("container-section01");
-let jugador01 = document.getElementById("jugador01");
-let jugador02 = document.getElementById("jugador02");
+let jugador01; 
+let jugador02;
+
 let validacion = document.getElementById("validacion");
 let botonJugar = document.getElementById("boton-jugar");
 
@@ -63,6 +64,7 @@ let partidasAnteriores = []; //guarda los *resultados*
 let listaDeAnteriores = document.getElementById("listaDeAnteriores"); //es el ul donde se agregan los li con j1 y j2
 let volverAVer = document.getElementById("volverAVer"); //es el botoncito que permite volver a ver la partida
 
+let pantalla;
 
 
 function random(){
@@ -77,7 +79,7 @@ function probarSuerte(){
             random();
     }
     mostrarResultados();
-    //console.log(resultados);
+    console.log(resultados);
 }
 
 function mostrarResultados(){
@@ -88,12 +90,12 @@ function mostrarResultados(){
     img5de6.setAttribute("src", resultados[4].img);
     img6de6.setAttribute("src", resultados[5].img);
 
-    carta1de6.innerHTML = "Carta 1/3 - " + jugador01.value;
-    carta2de6.innerHTML = "Carta 2/3 - " + jugador01.value;
-    carta3de6.innerHTML = "Carta 3/3 - " + jugador01.value;
-    carta4de6.innerHTML = "Carta 1/3 - " + jugador02.value;
-    carta5de6.innerHTML = "Carta 2/3 - " + jugador02.value;
-    carta6de6.innerHTML = "Carta 3/3 - " + jugador02.value;
+    carta1de6.innerHTML = "Carta 1/3 - " + jugador01;
+    carta2de6.innerHTML = "Carta 2/3 - " + jugador01;
+    carta3de6.innerHTML = "Carta 3/3 - " + jugador01;
+    carta4de6.innerHTML = "Carta 1/3 - " + jugador02;
+    carta5de6.innerHTML = "Carta 2/3 - " + jugador02;
+    carta6de6.innerHTML = "Carta 3/3 - " + jugador02;
 
     titulo1de6.innerHTML = resultados[0].nombre;
     titulo2de6.innerHTML = resultados[1].nombre;
@@ -111,16 +113,19 @@ function mostrarResultados(){
 }
 
 botonJugar.addEventListener("click", function(){
-    let jugador01Value = jugador01.value;
-    let jugador02Value = jugador02.value;
-    if (jugador01Value != "" && jugador02Value != ""){
+
+    jugador01 = document.getElementById("jugador01").value;
+    jugador02 = document.getElementById("jugador02").value;
+
+    if (jugador01 != "" && jugador02 != ""){
         section01.style.display= "none";
         section02.style.display= "flex";
         setTimeout(function(){
             probarSuerte();
             section02.style.display= "none";
-            section03.style.display= "flex"
-        },0)
+            section03.style.display= "flex";
+            pantalla = "opciones";
+        },3000)
     }else {
         validacion.style.display="block";
         validacion.innerHTML = "Completá los campos porfi";
@@ -129,7 +134,13 @@ botonJugar.addEventListener("click", function(){
 
 close.addEventListener("click", function(){
     section03.style.display= "none";
-    section04.style.display= "flex";
+
+    if(pantalla == "opciones") {
+        section04.style.display= "flex";
+        pantalla = "afinidad";
+    } else {
+        section05.style.display= "flex";
+    }
 })
 
 reset.addEventListener("click", function(){
@@ -141,14 +152,16 @@ reset.addEventListener("click", function(){
         probarSuerte();
         section02.style.display= "none";
         section03.style.display= "flex"
-    },0)
+        pantalla = "opciones";
+    },3000)
 })
 
 afinidad.addEventListener("click", function(){
     section04.style.display= "none";
     section05.style.display= "flex";
-    j01.innerHTML = jugador01.value;
-    j02.innerHTML = jugador02.value;
+    guardar.style.display= "block";
+    j01.innerHTML = jugador01;
+    j02.innerHTML = jugador02;
     pic1de6.setAttribute("src", resultados[0].img);
     pic2de6.setAttribute("src", resultados[1].img);
     pic3de6.setAttribute("src", resultados[2].img);
@@ -157,9 +170,11 @@ afinidad.addEventListener("click", function(){
     pic6de6.setAttribute("src", resultados[5].img);
 
     let n = resultados[0].valor + resultados[1].valor + resultados[2].valor;
+    console.log(n);
     let x = resultados[3].valor + resultados[4].valor + resultados[5].valor;
+    console.log(x);
 
-    if (n%2 ==0 && x%2 ==0){
+    if ((n%2) == (x%2)){
         resultadoFinal.innerHTML = "¡Increible afinidad!"
     }else{
         resultadoFinal.innerHTML = "No hay afinidad"
@@ -171,12 +186,15 @@ irInicio.addEventListener("click", function(){
     section01.style.display= "block";
     cartas = cartas.concat(resultados);
     resultados = [];
-    jugador01.value = "";
-    jugador02.value = "";
+    jugador01 = document.getElementById("jugador01");
+    jugador01.value="";
+    jugador02 = document.getElementById("jugador02");
+    jugador02.value="";
+    validacion.style.display = "none";
 })
 
 guardar.addEventListener("click", function(){
-    let partidaData ={nombrej01: jugador01.value, nombrej02: jugador02.value, resultados}
+    let partidaData ={nombrej01: jugador01, nombrej02: jugador02, resultados}
 
     let indice = partidasAnteriores.length;
 
@@ -189,37 +207,34 @@ guardar.addEventListener("click", function(){
     cartas = cartas.concat(resultados);
     resultados = [];
     let item = `<li>
-                <p>${jugador01.value} y ${jugador02.value}</p>
+                <p>${jugador01} y ${jugador02}</p>
                 <svg id="volverAVer" data-indice= ${indice} onclick="mostrarAnterior(event)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"/></svg>
                 </li>`
     listaDeAnteriores.innerHTML += item;
-    jugador01.value = "";
-    jugador02.value = "";
+
+    jugador01 = document.getElementById("jugador01");
+    jugador01.value="";
+    jugador02 = document.getElementById("jugador02");
+    jugador02.value="";
+    validacion.style.display = "none";
 })
 
 function mostrarAnterior(e){
     let svg = e.currentTarget;
     let indice = svg.getAttribute("data-indice");
 
-    //console.log(resultados);
-    //console.log(jugador01.value)
-    //console.log(jugador02.value)
-
     resultados = partidasAnteriores[indice].resultados;
     jugador01 = partidasAnteriores[indice].nombrej01;
     jugador02 = partidasAnteriores[indice].nombrej02;
   
-    //console.log(resultados);
-    //console.log(jugador01);
-    //console.log(jugador02);
-
     section01.style.display= "none";
     section02.style.display= "flex";
     setTimeout(function(){
         section02.style.display= "none";
-        section03.style.display= "flex"
+        section03.style.display= "flex";
+        guardar.style.display= "none";
         mostrarResultados();
-    },0)
+    },3000)
 
 }
 
